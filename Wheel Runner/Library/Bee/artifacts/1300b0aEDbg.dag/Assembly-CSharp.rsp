@@ -344,6 +344,7 @@
 -r:"Library/Bee/artifacts/1300b0aEDbg.dag/UnityEngine.UI.ref.dll"
 "Assets/Script/CameraController.cs"
 "Assets/Script/Player.cs"
+"Assets/Script/TrackManager.cs"
 -langversion:9.0
 
 /deterministic
