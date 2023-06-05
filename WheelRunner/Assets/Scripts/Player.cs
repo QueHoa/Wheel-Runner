@@ -58,10 +58,22 @@ public class Player : MonoBehaviour
         }else if (lane == 1)
         {
             targetPos += Vector3.right * laneDis;
+        }       
+        //transform.position = Vector3.Lerp(transform.position, targetPos, 50 * Time.fixedDeltaTime);
+        if(transform.position == targetPos)
+        {
+            return;
         }
-        //transform.position = targetPos;
-        transform.position = Vector3.Lerp(transform.position, targetPos, 50 * Time.fixedDeltaTime);
-        
+        Vector3 diff = targetPos - transform.position;
+        Vector3 moveDir = diff.normalized * 25 * Time.deltaTime;
+        if(moveDir.sqrMagnitude < diff.sqrMagnitude)
+        {
+            controller.Move(moveDir);
+        }
+        else
+        {
+            controller.Move(diff);
+        }
     }
     void FixedUpdate()
     {
