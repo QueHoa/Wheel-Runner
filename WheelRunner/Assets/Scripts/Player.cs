@@ -1,17 +1,26 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Collections;
 
 public class Player : MonoBehaviour
 {
     public float speed;
+    public float maxSpeed;
     public float laneDis = 4;
     public float jumpPower;
+
+    public bool isGrounded;
+    public LayerMask groundLayer;
+    public Transform groundCheck;
+
+    public Animator anim;
 
     private CharacterController controller;
     private Vector3 direction;
     private float lane = 0;//left:-1 middle:0 right:1
-    private float gravity = -20;
+    private float gravity = -22;
+    private bool isSliding = false;
 
     // Start is called before the first frame update
     void Start()
@@ -22,8 +31,19 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (!GameManager.isGameStart)
+        {
+            return;
+        }
+        if (speed < maxSpeed)
+        {
+            speed += speed * 0.05f * Time.deltaTime;
+        }
+        anim.SetBool("IsGameStart", true);
         direction.z = speed;
-        if (controller.isGrounded)
+        isGrounded = Physics.CheckSphere(groundCheck.position, 0.17f, groundLayer);
+        anim.SetBool("IsGrounded", isGrounded);
+        if (isGrounded)
         {
             //direction.y = -1;
             if (Input.GetKeyDown(KeyCode.UpArrow))
@@ -35,7 +55,10 @@ public class Player : MonoBehaviour
         {
             direction.y += gravity * Time.deltaTime;
         }
-        
+        if (Input.GetKeyDown(KeyCode.DownArrow) && !isSliding)
+        {
+            StartCoroutine(Slide());
+        }
         //controller.Move(direction * Time.deltaTime);
         if (Input.GetKeyDown(KeyCode.RightArrow))
         {
@@ -65,7 +88,7 @@ public class Player : MonoBehaviour
             return;
         }
         Vector3 diff = targetPos - transform.position;
-        Vector3 moveDir = diff.normalized * 25 * Time.deltaTime;
+        Vector3 moveDir = diff.normalized * 30 * Time.deltaTime;
         if(moveDir.sqrMagnitude < diff.sqrMagnitude)
         {
             controller.Move(moveDir);
@@ -77,10 +100,35 @@ public class Player : MonoBehaviour
     }
     void FixedUpdate()
     {
+        if (!GameManager.isGameStart)
+        {
+            return;
+        }
         controller.Move(direction * Time.fixedDeltaTime);
     }
     private void Jump()
     {
         direction.y = jumpPower;
+    }
+    private void OnControllerColliderHit(ControllerColliderHit hit)
+    {
+        if (hit.transform.tag == "Obstacle")
+        {
+            GameManager.gameOver = true;
+        }
+    }
+    private IEnumerator Slide()
+    {
+        isSliding = true;
+        anim.SetBool("IsSliding", true);
+        controller.center = new Vector3(0, -0.5f, 0);
+        controller.height = 1;
+
+        yield return new WaitForSeconds(0.6f);
+
+        controller.center = new Vector3(0, 0, 0);
+        controller.height = 2;
+        anim.SetBool("IsSliding", false);
+        isSliding = false;
     }
 }
