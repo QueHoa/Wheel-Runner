@@ -4,14 +4,10 @@ using UnityEngine;
 
 public class Coin : MonoBehaviour
 {
-    public AudioClip scoreClip;
-
-    private AudioSource audioSource;
-
     // Start is called before the first frame update
     void Start()
     {
-        audioSource = gameObject.GetComponent<AudioSource>();
+        
     }
 
     // Update is called once per frame
@@ -23,8 +19,6 @@ public class Coin : MonoBehaviour
     {
         if (other.tag == "Player")
         {
-            audioSource.clip = scoreClip;
-            audioSource.Play();
             GameManager.numberOfCoin += 1;
             Destroy(gameObject);
         }

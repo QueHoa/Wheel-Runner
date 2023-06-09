@@ -15,7 +15,10 @@ public class Player : MonoBehaviour
     public Transform groundCheck;
 
     public Animator anim;
+    public AudioClip scoreClip;
+    public AudioClip dieClip;
 
+    private AudioSource audioSource;
     private CharacterController controller;
     private Vector3 direction;
     private float lane = 0;//left:-1 middle:0 right:1
@@ -25,6 +28,7 @@ public class Player : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        audioSource = gameObject.GetComponent<AudioSource>();
         controller = GetComponent<CharacterController>();
     }
 
@@ -114,7 +118,10 @@ public class Player : MonoBehaviour
     {
         if (hit.transform.tag == "Obstacle")
         {
+            audioSource.clip = dieClip;
+            audioSource.Play();
             GameManager.gameOver = true;
+            GameManager.audioSource.Play();
         }
     }
     private IEnumerator Slide()
@@ -124,11 +131,16 @@ public class Player : MonoBehaviour
         controller.center = new Vector3(0, -0.5f, 0);
         controller.height = 1;
 
-        yield return new WaitForSeconds(0.6f);
+        yield return new WaitForSeconds(0.7f);
 
         controller.center = new Vector3(0, 0, 0);
         controller.height = 2;
         anim.SetBool("IsSliding", false);
         isSliding = false;
+    }
+    private void OnTriggerEnter(Collider other)
+    {
+        audioSource.clip = scoreClip;
+        audioSource.Play();
     }
 }

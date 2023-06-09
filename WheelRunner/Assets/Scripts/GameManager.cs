@@ -12,9 +12,11 @@ public class GameManager : MonoBehaviour
     public GameObject startText;
     public static int numberOfCoin;
     public Text coinText;
+    public Text scoreText;
     public AudioClip gameMusicClip;
-
-    private AudioSource audioSource;
+    public AudioClip gameOverClip;
+    //[HideInInspector]
+    public static AudioSource audioSource;
 
     // Start is called before the first frame update
     void Start()
@@ -24,6 +26,8 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 1;
         isGameStart = false;
         numberOfCoin = 0;
+        audioSource = gameObject.GetComponent<AudioSource>();
+        audioSource.Play();
     }
 
     // Update is called once per frame
@@ -32,7 +36,11 @@ public class GameManager : MonoBehaviour
         if (gameOver)
         {
             Time.timeScale = 0;
+            audioSource.clip = gameOverClip;
+            audioSource.loop = false;
+            scoreText.text = "Coins: " + numberOfCoin.ToString();
             gameOverPanel.SetActive(true);
+            coinText.gameObject.SetActive(false);
         }
         coinText.text = "Coins: " + numberOfCoin.ToString();
         /*if (Input.GetKey(KeyCode.Space))
@@ -53,5 +61,6 @@ public class GameManager : MonoBehaviour
     {
         isGameStart = true;
         Destroy(startText);
+        coinText.gameObject.SetActive(true);
     }
 }
