@@ -41,7 +41,7 @@ public class Player : MonoBehaviour
         }
         if (speed < maxSpeed)
         {
-            speed += speed * 0.05f * Time.deltaTime;
+            speed += speed * 0.2f * Time.deltaTime;
         }
         anim.SetBool("IsGameStart", true);
         direction.z = speed;
